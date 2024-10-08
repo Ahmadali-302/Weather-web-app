@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Weather App</title>
+</head>
+
+<body class="bg-black flex justify-center items-center h-screen w-auto">
+    <section class="conainter bg-white w-2/5 h-2/3 rounded-md h-auto">
+        <!-- ---------Search Bar----------- -->
+        <div class="weather_header mt-6 ml-6">
+            <form action="" class="weather_search bg-black inline-flex items-center rounded-full overflow-hidden">
+                <i class="fa-solid fa-magnifying-glass text-white p-2"></i>
+                <input type="text" class="input_city border-none bg-black text-white p-2 focus:outline-none "
+                    placeholder="Search for a city...">
+            </form>
+
+        </div>
+        <!-- ----------Main Body---------- -->
+        <div class="weather_body flex justify-center flex-col items-center m-6">
+            <h1 class="weather_city font-bold text-3xl"></h1>
+            <p class="weather_date_time text-sm font-bold"></p>
+
+            <div class="weather_data flex justify-center items-center flex-col">
+                <p class="weather_forecast bg-black p-2 text-white inline-flex rounded-full"></p>
+                <div class="weather_icon w-14 h14 object-cover"></div>
+                <p class="weather_temperature font-bold text-xl mt-2">278&deg;</p>
+
+                <!-- Weather Min/Max Section -->
+                <div class="weather_min_max text-sm flex justify-between gap-4 mt-2">
+                    <p class="weather_min">min: 277&deg;</p>
+                    <p class="weather_max">max: 280&deg;</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ----------Weather Info--------- -->
+        <div class="weather_info grid grid-cols-1 md:grid-cols-2 gap-4 flex justify-evenly m-6">
+
+            <div class="weather_card flex items-center p-2 bg-gray-200 rounded-md h-12 text-sm">
+                <i class="fa-solid fa-temperature-three-quarters p-2 mb-0 text-xl"></i>
+                <div>
+                    <p>Feels Like</p>
+                    <p class="weather_feelslike">25&deg;</p>
+                </div>
+            </div>
+
+            <div class="weather_card flex items-center p-2 bg-gray-200 rounded-md h-12 text-sm">
+                <i class="fa-solid fa-droplet p-2 mb-0 text-xl"></i>
+                <div>
+                    <p>Humidity</p>
+                    <p class="weather_humidity">25&deg;</p>
+                </div>
+            </div>
+
+            <div class="weather_card flex items-center p-2 bg-gray-200 rounded-md h-12 text-sm">
+                <i class="fa-solid fa-wind p-2 mb-0 text-xl"></i>
+                <div>
+                    <p>Wind</p>
+                    <p class="weather_wind">25&deg;</p>
+                </div>
+            </div>
+
+            <div class="weather_card flex items-center p-2 bg-gray-200 rounded-md h-12 text-sm">
+                <i class="fa-solid fa-gauge-high p-2 mb-0 text-xl"></i>
+                <div>
+                    <p>Pressure</p>
+                    <p class="weather_pressure">25&deg;</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let cityName = document.querySelector(".weather_city");
+        let dateTime = document.querySelector(".weather_date_time");
+        let weather_forecast = document.querySelector(".weather_forecast");
+        let weather_temp = document.querySelector(".weather_temperature");
+        let weather_icon = document.querySelector(".weather_icon");
+        let weather_min = document.querySelector(".weather_min");
+        let weather_max = document.querySelector(".weather_max");
+
+        let weather_feelslike = document.querySelector(".weather_feelslike");
+        let weather_humidity = document.querySelector(".weather_humidity");
+        let weather_wind = document.querySelector(".weather_wind");
+        let weather_pressure = document.querySelector(".weather_pressure");
+
+
+        let city_search = document.querySelector(".weather_search");
+        let city = "lahore";
+
+        city_search.addEventListener("submit", (e) => {
+            e.preventDefault();
+            let inputCity = document.querySelector(".input_city");
+            // console.log(inputCity.value);
+            city = inputCity.value;
+            getWeatherData();
+            inputCity.value = "";
+        });
+
+        const getCountryName = (code) => {
+            return new Intl.DisplayNames([code], { type: 'region' }).of(code);
+        }
+
+        const getWeatherData = async () => {
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=eb50102d19eac6701eb30e8a06aa4faa`;
+
+            try {
+                const res = await fetch(weatherUrl);
+                const data = await res.json();  // Await the json parsing
+                // console.log(data)
+
+                const { main, name, weather, wind, sys, dt } = data;  // Destructure after parsing
+                const { temp, feels_like, humidity, pressure } = main;
+                const { description } = weather;
+
+                // console.log(sys.country);
+                // console.log(data.wind)
+
+                cityName.textContent = `${name}, ${getCountryName(sys.country)}`;  // Assuming 'cityName' is a valid DOM element
+                dateTime.textContent = new Date(dt * 1000).toLocaleString();  // Convert to local
+                weather_temp.innerHTML = `${main.temp}&deg`;
+                weather_forecast.innerHTML = weather[0].main;
+                weather_icon.innerHTML = `<img src="http://openweathermap.org/img/wn/${weather[0].icon}@4x.png" />`;
+                weather_min.innerHTML = `Min: ${main.temp_min}&deg`;
+                weather_max.innerHTML = `Max: ${main.temp_max}&deg`;
+
+                weather_feelslike.innerHTML = `${main.feels_like}&deg`;
+                weather_humidity.innerHTML = `${main.humidity}%`;
+                weather_wind.innerHTML = `${wind.speed}m/s`;
+                weather_pressure.innerHTML = `${main.pressure} hPa`;
+
+
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        // Fix the event listener by passing the function reference without invoking it
+        document.body.addEventListener("load", getWeatherData());
+
+    </script>
+</body>
+
+</html>
